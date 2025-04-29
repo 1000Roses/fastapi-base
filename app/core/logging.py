@@ -2,6 +2,7 @@ import uuid
 import sys
 import time
 import functools
+import traceback
 from loguru import logger
 from fastapi import Request
 from typing import Callable
@@ -66,7 +67,6 @@ def log_service_call(service_name: str) -> Callable:
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
-
             request_id = kwargs.get("request_id", "")
             if not request_id and "request" in kwargs:
                 request_id = get_request_id(kwargs["request"])
@@ -81,8 +81,9 @@ def log_service_call(service_name: str) -> Callable:
                         service=service_name, func=func.__name__, time=time.time() - t_begin)
                 return result
             except Exception as e:
-                log.error("Call failed: {service}.{func} - {error}", 
-                         service=service_name, func=func.__name__, error=str(e))
+                error_trace = traceback.format_exc()
+                log.error("Call failed: {service}.{func} - {error}\nTraceback:\n{trace}", 
+                         service=service_name, func=func.__name__, error=str(e), trace=error_trace)
                 return ErrorResponse.DEFAULT
         return wrapper
     return decorator 

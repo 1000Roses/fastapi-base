@@ -13,5 +13,5 @@ class Employee(Base):
     type_of_working = Column(String(100), nullable=False)
     hometown = Column(String(500), nullable=False)
     age = Column(Integer, nullable=False)
-    active = Column(Integer, nullable=False)
+    active = Column(Integer, nullable=False, default=1)
     t_create = Column(DateTime(timezone=True), server_default=func.now())

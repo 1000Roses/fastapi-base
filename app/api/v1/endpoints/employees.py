@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.post("/get/{employee_id}")
-@log_service_call("HandlerEmployeeAPI")
+@log_service_call("HandlerEmployeeAPI") # này phải ghi tên url mới đúng
 async def get_employee(
     employee_id: int,
     request: Request = None,
@@ -23,7 +23,7 @@ async def get_employee(
     return await service.get_employee(employee_id=employee_id, request_id=request_id)
 
 
-@router.post("/get-all")
+@router.post("/get-list")
 @log_service_call("EmployeeAPI")
 async def get_employees(
     request: Request,
@@ -33,10 +33,10 @@ async def get_employees(
 ):
     request_id = request.state.request_id
     service = EmployeeService(EmployeeRepository(db), request_id)
-    return await service.get_employees(request, skip=skip, limit=limit)
+    return await service.get_employees(request_id=request_id, skip=skip, limit=limit)
 
 
-@router.post("/create", response_model=EmployeeResponse)
+@router.post("/create")
 @log_service_call("EmployeeAPI")
 async def create_employee(
     employee: EmployeeCreate,
@@ -45,17 +45,16 @@ async def create_employee(
 ):
     request_id = request.state.request_id
     service = EmployeeService(EmployeeRepository(db), request_id)
-    return await service.create_employee(employee, request)
+    return await service.create_employee(request_id=request_id, employee=employee)
 
 
-@router.post("/update/{employee_id}", response_model=EmployeeResponse)
+@router.post("/update/{employee_id}")
 @log_service_call("EmployeeAPI")
 async def update_employee(
-    employee_id: int,
     employee_update: EmployeeUpdate,
     request: Request,
     db: AsyncSession = Depends(get_db)
 ):
     request_id = request.state.request_id
     service = EmployeeService(EmployeeRepository(db), request_id)
-    return await service.update_employee(employee_id, employee_update, request) 
+    return await service.update_employee(request_id=request_id, employee_update=employee_update) 

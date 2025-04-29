@@ -28,4 +28,5 @@ def setup_sql_logging(engine: AsyncEngine):
         total = time.time() - conn.info['query_start_time'].pop(-1)
         request_id = get_request_id()
         log = logger.bind(request_id=request_id)
-        log.info("SQL executed in {time:.2f}s", time=total) 
+        rowcount = cursor.rowcount
+        log.info("SQL executed in {time:.2f}s, affected {rows} rows", time=total, rows=rowcount) 

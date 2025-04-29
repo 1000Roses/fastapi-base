@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 from app.core.sql_logging import setup_sql_logging, set_request_id
 from fastapi import Request
+from loguru import logger
 
 SQLALCHEMY_DATABASE_URL = (
     f"mysql+aiomysql://{settings.DB_USERNAME}:{settings.DB_PASSWORD}"
@@ -17,6 +18,9 @@ engine = create_async_engine(
     pool_timeout=settings.DB_POOL_TIMEOUT,
     echo=False,  # Disable SQLAlchemy's built-in logging
 )
+
+logger.info("Database engine initialized with pool_size={}, max_overflow={}", 
+           settings.DB_POOL_SIZE, settings.DB_MAX_OVERFLOW)
 
 # Setup SQL logging with request_id context
 setup_sql_logging(engine)
